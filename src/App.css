@@ -1,9 +1,13 @@
 body {
-  font-family: "Rubik", sans-serif;
+  font-family: "Oswald", sans-serif;
   padding: 20px 60px;
 }
 
 a {
   text-decoration: none;
   color: black;
+}
+
+* {
+  box-sizing: border-box;
 }
