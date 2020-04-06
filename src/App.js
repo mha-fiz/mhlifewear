@@ -6,7 +6,7 @@ import ShopPage from "./pages/shop/shop.component";
 import Header from "./components/header/header.component";
 import SignInAndSignUp from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 
-import { auth } from "./firebase/firebase.utils";
+import { auth, createUserProfile } from "./firebase/firebase.utils";
 
 class App extends React.Component {
   constructor() {
@@ -20,10 +20,24 @@ class App extends React.Component {
 
   componentDidMount() {
     //? adds an observer for changes in user's sign-in state
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(user => {
-      this.setState({ currentUser: user });
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+      if (userAuth) {
+        const userRef = await createUserProfile(userAuth);
 
-      console.log(user);
+        userRef.onSnapshot(snapShot => {
+          //onSnapshot: listen if there's any changes regarding CRUD of the object we give
+          this.setState({
+            currentUser: {
+              id: snapShot.id, //the uid
+              ...snapShot.data() //the displayName,email,createdAt
+            }
+          });
+          console.log(this.state);
+        });
+      } else {
+        //if it's null
+        this.setState({ currentUser: userAuth });
+      }
     });
   }
 
