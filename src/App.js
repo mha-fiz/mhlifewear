@@ -20,22 +20,22 @@ class App extends React.Component {
     const { setCurrentUser } = this.props;
 
     //? adds an observer for changes in user's sign-in state
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       if (userAuth) {
         const userRef = await createUserProfile(userAuth);
 
-        userRef.onSnapshot(snapShot => {
+        userRef.onSnapshot((snapShot) => {
           //onSnapshot: listen if there's any changes regarding CRUD of the object we give
 
-          //set user for firebase
+          //set user to app state
           setCurrentUser({
             id: snapShot.id, //the uid
-            ...snapShot.data() //the displayName,email,createdAt
+            ...snapShot.data(), //the displayName,email,createdAt
           });
         });
       }
 
-      //set current user on the app itself (the app state)
+      //outside of if(userAuth) function. set current user, even if the userAuth object is 'null' (no user sign-in)
       setCurrentUser(userAuth);
     });
   }
@@ -71,11 +71,11 @@ class App extends React.Component {
 }
 
 const mapStateToProps = createStructuredSelector({
-  currentUser: selectCurrentUser
+  currentUser: selectCurrentUser,
 });
 
-const mapDispatchToProps = dispatch => ({
-  setCurrentUser: user => dispatch(setCurrentUser(user))
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
