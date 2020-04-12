@@ -10,7 +10,7 @@ const config = {
   storageBucket: "mhlifewear.appspot.com",
   messagingSenderId: "173661740745",
   appId: "1:173661740745:web:86c6734fc699fd9a74f718",
-  measurementId: "G-K1LL6VXR4Y"
+  measurementId: "G-K1LL6VXR4Y",
 };
 
 firebase.initializeApp(config);
@@ -40,7 +40,7 @@ export const createUserProfile = async (userAuth, additionalData) => {
         displayName,
         email,
         createdAt,
-        ...additionalData
+        ...additionalData,
       });
     } catch (error) {
       console.log("error creating new user", error.message);
@@ -48,6 +48,41 @@ export const createUserProfile = async (userAuth, additionalData) => {
   }
 
   return userRef; //in case we need it for something else later
+};
+
+//? batch upload shop data to firestore (one time use only)
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  const collectionRef = firestore.collection(collectionKey);
+  const batch = firestore.batch();
+  objectsToAdd.forEach((obj) => {
+    const newDocRef = collectionRef.doc(); // we didnt pass any value to doc so the firebase will generate the unique id
+    batch.set(newDocRef, obj);
+  });
+  return await batch.commit();
+};
+
+//? convert shop data collections to an object
+export const convertCollectionsSnapshotToMap = (collections) => {
+  const transformedCollection = collections.docs.map((doc) => {
+    const { title, items } = doc.data();
+
+    return {
+      routeName: encodeURI(title.toLowerCase()),
+      id: doc.id,
+      title,
+      items,
+    };
+  });
+  return transformedCollection.reduce(
+    ((accumulator, collection) => {
+      accumulator[collection.title.toLowerCase()] = collection;
+      return accumulator;
+    },
+    {})
+  );
 };
 
 export default firebase;
