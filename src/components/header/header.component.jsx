@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as Logo } from "../../assets/crown.svg";
+import { ReactComponent as Logo } from "../../assets/mhlogo-1.svg";
 import {
   HeaderContainer,
   LogoContainer,
@@ -23,7 +23,7 @@ const Header = ({ currentUser, hidden, signOutStart }) => (
     </LogoContainer>
     <OptionsContainer>
       <OptionLink to="/shop">SHOP</OptionLink>
-      <OptionLink to="/contact">CONTACT</OptionLink>
+      {/* <OptionLink to="/contact">CONTACT</OptionLink> */}
       {currentUser ? (
         <OptionLink as="div" onClick={signOutStart}>
           SIGN OUT
